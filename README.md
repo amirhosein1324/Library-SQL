@@ -86,8 +86,4 @@ Multi-value fields must be JSON arrays.
 
 ---
 
-<<<<<<< HEAD
-## Thanks for reading
-=======
-## Thanks for reading
->>>>>>> 6e684e35d7a2bbca840951b5e353639ac5de6efa
+## Thanks for Reading
