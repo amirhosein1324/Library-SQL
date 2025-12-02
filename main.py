@@ -49,50 +49,6 @@ data = list(cur.execute("""SELECT id, title, product_code, category, age_group, 
 m = [list(i) for i in data]
 books = []
 
-# for row in m:
-#     publisher = None
-#     for p in publishers:
-#         if p.id == row[6]:
-#             publisher = p
-#             break
-
-#     category = None
-#     for c in categories:
-#         if c.name == row[3]:
-#             category = c
-#             break
-
-#     lang = None
-#     for l in languages:
-#         if l.name == row[9]:
-#             lang = l
-#             break
-
-#     designer = None
-#     for d in cover_designers:
-#         if d.id == row[10]:
-#             designer = d
-#             break
-
-#     translator = None
-#     for t in translators:
-#         if t.id == row[11]:
-#             translator = t
-#             break
-
-#     resource = None
-#     for r in resources:
-#         if r.name == row[12]:
-#             resource = r
-#             break
-
-#     author = None
-#     for a in authors:
-#         if a.id == row[5]:
-#             author = a
-#             break
-
-
 
 for row in m:
     publisher = next((p for p in publishers if p.id == row[6]), None)

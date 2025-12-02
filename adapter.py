@@ -11,13 +11,12 @@ import datetime
 #                   encoding="utf-8").read()
 # cursor.executescript(sql_script)
 
-pre ="insert book ilia 1040 [1,2] Adult 2020-10-07 [4,3] 90 [3] 4 [1] [3,1,2] [1,2] "
+pre ="insert book Hasti 1040 [1,2] Adult 2020-10-07 [4,3] 90 [3] 4 [1] [3,1,2] [1,2] "
 
 # print(LibraryDataAdapter.ResourcesDataAdapter.delete(51))
 # print(LibraryDataAdapter.ResourcesDataAdapter.delete())
 
 r = r"^\[\d+(,\d+)*\]$"
-
 r2 = r"^\d{4}-\d{2}-\d{2}$"
 
 while True:
@@ -42,6 +41,7 @@ Add book : insert book [title] [product_code] [list[category_id,category_id,...]
 example : insert book hello 1040 [1,2] Adult 2020-10-07 [4,3] 90 [3] 4 [1] [3,1,2] [1,2]
 Delete book : delete book [book_id]
 """) 
+    
     s=input().split()
 
     if s[0]=="insert":
@@ -97,6 +97,7 @@ Delete book : delete book [book_id]
                         if int(i) in cat_id:
                             categories.append(model.Category.categories[model.Category.categories.index(int(i))])
                             
+
                             
                     authors=[]
                     author_id=[i.id for i in model.Author.authors]
@@ -105,6 +106,7 @@ Delete book : delete book [book_id]
                             authors.append(model.Author.authors[model.Author.authors.index(int(i))])
                             
                             
+
                     language_id=[i.id for i in model.Language.languages]        
                     languages=[]    
                     for i in language:
@@ -112,12 +114,14 @@ Delete book : delete book [book_id]
                             languages.append(model.Language.languages[model.Language.languages.index(int(i))]) 
                             
                               
+
                     designers=[]    
                     designer_id=[i.id for i in model.CoverDesigner.cover_designers]    
                     for i in designer:
                         if int(i) in designer_id:
                             designers.append(model.CoverDesigner.cover_designers[model.CoverDesigner.cover_designers.index(int(i))])    
-                            
+
+
                                        
                     translators=[]
                     translator_id=[i.id for i in model.Translator.translators]   
@@ -126,14 +130,15 @@ Delete book : delete book [book_id]
                             translators.append(model.Translator.translators[model.Translator.translators.index(int(i))])   
                             
                             
+
                     resources=[]             
                     resource_id=[i.id for i in model.Translator.translators]                                                      
                     for i in resource:
                         if int(i) in resource_id:
                             resources.append(model.Resources.resources[model.Resources.resources.index(int(i))])  
                             
-                    # print(categories)    
-                    print("ttyhty")  
+
+                    print("salam aleykom")  
                     print(type(release_date))          
                     b1=model.Book(None,title,code,categories,age_group,release_date,authors,price,languages,publisher,designers,translators,resources)                   
                     b2 = LibraryDataAdapter.BookDataAdapter.insert(b1)
@@ -142,7 +147,6 @@ Delete book : delete book [book_id]
                 except:
                     print("Error")    
                 
-             
         else:
             print("Error")                                     
     elif s[0] == "delete":
@@ -205,6 +209,5 @@ Delete book : delete book [book_id]
     elif s[0]=="exit":
         break     
     
-
 LibraryDataAdapter.cursor.close()
 LibraryDataAdapter.connection.close()

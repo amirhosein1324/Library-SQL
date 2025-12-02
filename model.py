@@ -1,6 +1,5 @@
 import datetime
 
-
 class Category:
     id: int = 0
     name: str = ""
@@ -125,7 +124,6 @@ class Translator:
             return self.id == other.id
         else:
             return
-
 
 class Resources:
     id: int = 0
