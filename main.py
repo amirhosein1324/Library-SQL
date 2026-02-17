@@ -1,6 +1,5 @@
 import sqlite3
 import model as md
-import datetime
 
 db_name = "Library.db"
 cn = sqlite3.connect(db_name)
