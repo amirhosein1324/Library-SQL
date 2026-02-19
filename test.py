@@ -1,13 +1,12 @@
+import LibraryDataAdapter
 import model
 import sqlite3
-import LibraryDataAdapter
 
 
-connection = sqlite3.connect("library.db")
+connection = sqlite3.connect("NewLibrary.db")
 cursor = connection.cursor()
 
 model.Book.books = LibraryDataAdapter.BookDataAdapter.get_all()
-
 
 for i in (model.Book.books):
     print("id:", i.id, "title:", i.title, "product_code:", i.product_code, "categories:", [[j.id, j.name] for j in i.categories], "age_group:", i.age_group, "authors:", [[j.id, j.name] for j in i.authors], "publisher:", [

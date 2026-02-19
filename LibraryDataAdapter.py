@@ -3,11 +3,12 @@ import sqlite3
 import datetime
 
 
-connection = sqlite3.connect("library.db")
+connection = sqlite3.connect("NewLibrary.db")
 cursor = connection.cursor()
 
 
 class CategoryDataAdapter:
+
     @staticmethod
     def get_all():
         table = list(cursor.execute("SELECT * FROM categories;"))
@@ -30,8 +31,10 @@ class CategoryDataAdapter:
                 return True
             else:
                 return False          
+  
 
 class AuthorDataAdapter:
+
     @staticmethod
     def get_all():
         table = list(cursor.execute("SELECT * FROM authors;"))
@@ -107,6 +110,7 @@ class LanguageDataAdapter:
                 return False          
 
 class DesignerDataAdapter:
+
     @staticmethod
     def get_all():
         table = list(cursor.execute("SELECT * FROM cover_designers;"))
@@ -131,6 +135,7 @@ class DesignerDataAdapter:
                 return False   
 
 class TranslatorDataAdapter:
+
     @staticmethod
     def get_all():
         table = list(cursor.execute("SELECT * FROM translators;"))
@@ -185,6 +190,7 @@ class BookDataAdapter:
     def get_all():
         sql = "SELECT id,title,product_code,age_group,publisher_id,release_date,price,author_id,category_id,designer_id,language_id,translator_id,resource_id from books LEFT JOIN book_author on book_author.book_id==books.id LEFT JOIN book_category on book_category.book_id==books.id LEFT JOIN book_designer on book_designer.book_id==books.id LEFT JOIN book_language on book_language.book_id==books.id LEFT JOIN book_translator on book_translator.book_id==books.id LEFT JOIN resources_book on resources_book.book_id==books.id "
         table = list(cursor.execute(sql))
+
         categories = CategoryDataAdapter.get_all()
         authors = AuthorDataAdapter.get_all()
         publishers = PublisherDataAdapter.get_all()
@@ -203,8 +209,6 @@ class BookDataAdapter:
             release_date = datetime.date.fromisoformat(row[5])
             price = row[6]
 
-            # book_categories = [categories[categories.index(cat)] for cat in [
-            #     cat_row[7] for cat_row in table if cat_row[0] == book_id] if cat is not None and not cat in book_categories]
             book_categories = []
             
             for cat_row in table:
@@ -213,10 +217,7 @@ class BookDataAdapter:
                     
                     book_categories.append(
                         categories[categories.index(cat_row[8])])
-               
-
-        #     book_authors = [authors[authors.index(author)] for author in [
-        #         author_row[8] for author_row in table if author_row[0] == book_id] if author is not None]
+            
             book_authors = []
            
             for auth_row in table:
@@ -225,32 +226,24 @@ class BookDataAdapter:
                     
                     book_authors.append(authors[authors.index(auth_row[7])])
                     
-        #     book_languages = [languages[languages.index(language)] for language in [
-        #         language_row[9] for language_row in table if language_row[0] == book_id] if language is not None]
             book_languages = []
             for lang_row in table:
                 if lang_row[0] == book_id and lang_row[10] is not None and lang_row[10] not in book_languages:
                     book_languages.append(
                         languages[languages.index(lang_row[10])])
 
-        #     book_designers = [cover_designers[cover_designers.index(designer)] for designer in [
-        #         designer_row[10] for designer_row in table if designer_row[0] == book_id] if designer is not None]
             book_designers = []
             for des_row in table:
                 if des_row[0] == book_id and des_row[9] is not None and des_row[9] not in book_designers:
                     book_designers.append(
                         cover_designers[cover_designers.index(des_row[9])])
 
-        #     book_translators = [translators[translators.index(translator)] for translator in [
-        #         translator_row[11] for translator_row in table if translator_row[0] == book_id] if translator is not None]
             book_translators = []
             for tran_row in table:
                 if tran_row[0] == book_id and tran_row[11] is not None and tran_row[11] not in book_translators:
                     book_translators.append(
                         translators[translators.index(tran_row[11])])
 
-        #     book_resources = [resources[resources.index(resource)] for resource in [
-        #         resources_row[12] for resources_row in table if resources_row[0] == book_id] if resource is not None]
             book_resources = []
             for res_row in table:
                 if res_row[0] == book_id and res_row[12] is not None and res_row[12] not in book_resources:
@@ -303,7 +296,11 @@ class BookDataAdapter:
             cursor.execute("Delete FROM books where id=={};".format(id))
             connection.commit()
             return True
-    def insert(book:model.Book) : 
+    def insert(book:model.Book) :
+
+        
+        
+        
         title=book.title
         code= book.product_code 
         cat=[book.categories[i].id for i in range(len(book.categories))]

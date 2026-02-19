@@ -1,90 +1,197 @@
+import re
+import json
+import datetime
+import model
 import sqlite3
-import model as md
-
-db_name = "Library.db"
-cn = sqlite3.connect(db_name)
-cur = cn.cursor()
-
-with open("Library.sql", "r", encoding="utf-8") as f:
-    sql_script = f.read()
-cur.executescript(sql_script)
-
-data = list(cur.execute("SELECT id, name, address, website FROM publishers"))
-m = [list(i) for i in data]
-publishers = []
-[publishers.append(md.Publisher(row[0], row[1], row[2], row[3])) for row in m]
-
-data = list(cur.execute("SELECT id, name, birthdate, nationality FROM authors"))
-m = [list(i) for i in data]
-authors = []
-[authors.append(md.Author(row[0], row[1], row[2], row[3])) for row in m]
-
-data = list(cur.execute("SELECT id, name FROM categories"))
-m = [list(i) for i in data]
-categories = []
-[categories.append(md.Category(row[0], row[1])) for row in m]
-
-data = list(cur.execute("SELECT id, name FROM languages"))
-m = [list(i) for i in data]
-languages = []
-[languages.append(md.Language(row[0], row[1])) for row in m]
-
-data = list(cur.execute("SELECT id, name, birthdate, nationality FROM cover_designers"))
-m = [list(i) for i in data]
-cover_designers = []
-[cover_designers.append(md.CoverDesigner(row[0], row[1], row[2], row[3])) for row in m]
-
-data = list(cur.execute("SELECT id, name, language FROM translators"))
-m = [list(i) for i in data]
-translators = []
-[translators.append(md.Translator(row[0], row[1] , row[2])) for row in m]
-
-data = list(cur.execute("SELECT id, name FROM resources"))
-m = [list(i) for i in data]
-resources = []
-[resources.append(md.Resources(row[0], row[1])) for row in m]
-
-data = list(cur.execute("""SELECT id, title, product_code, category, age_group, author_id, publisher_id, release_date, price, language, cover_designer_id, translator_id, resources FROM books"""))
-m = [list(i) for i in data]
-books = []
+import LibraryDataAdapter
 
 
-for row in m:
-    publisher = next((p for p in publishers if p.id == row[6]), None)
-    category = next((c for c in categories if c.name == row[3]), None)
-    lang = next((l for l in languages if l.name == row[9]), None)
-    designer = next((d for d in cover_designers if d.id == row[10]), None)
-    translator = next((t for t in translators if t.id == row[11]), None)
-    resource = next((r for r in resources if r.name == row[12]), None)
-    author = next((a for a in authors if a.id == row[5]), None)
+# connection = sqlite3.connect("Library.db")
+# cursor = connection.cursor()
+# sql_script = open(file="Library.sql", mode="rt",
+#                   encoding="utf-8").read()
+# cursor.executescript(sql_script)
 
+pr = "insert book ilia 1040 [1,2] Adult 2020-10-07 [4,3] 90 [3] 4 [1] [3,1,2] [1,2] "
+ 
+z = r"^\[\d+(,\d+)*\]$"
+z2 = r"^\d{4}-\d{2}-\d{2}$"
 
-    Xbook = md.Book()
-    Xbook.id = row[0]
-    Xbook.title = row[1]
-    Xbook.product_code = row[2]
-    Xbook.categories = category
-    Xbook.age_group = row[4]
-    Xbook.authors = [author] if author else []
-    Xbook.publisher = publisher
-    Xbook.release_date = row[7]
-    Xbook.price = row[8]
-    Xbook.languages = [lang] if lang else []
-    Xbook.cover_designers = [designer] if designer else []
-    Xbook.translators = [translator] if translator else []
-    Xbook.resources = [resource] if resource else []
-    books.append(Xbook)
+while True:
+    model.Category.categories = LibraryDataAdapter.CategoryDataAdapter.get_all()
+    model.Author.authors = LibraryDataAdapter.AuthorDataAdapter.get_all()
+    model.Publisher.publishers = LibraryDataAdapter.PublisherDataAdapter.get_all()
+    model.Language.languages = LibraryDataAdapter.LanguageDataAdapter.get_all()
+    model.CoverDesigner.cover_designers = LibraryDataAdapter.DesignerDataAdapter.get_all()
+    model.Translator.translators = LibraryDataAdapter.TranslatorDataAdapter.get_all()
+    model.Resources.resources = LibraryDataAdapter.ResourcesDataAdapter.get_all()
+    model.Publisher.publishers = LibraryDataAdapter.PublisherDataAdapter.get_all()
+    model.Book.books = LibraryDataAdapter.BookDataAdapter.get_all()
+    print("""help:
+Add Author : insert author [name] [birthdate] [nationality] / Delete : delete author [author_id]
+Add Publisher : insert publisher [name] [address] [website] / Delete : delete publisher [publisher_id]
+Add Language : insert language [name] / Delete : delete language [language_id]
+Add Cover Designer : insert designer [name] [birthdate] [nationality] / Delete : delete designer [designer_id]
+Add Translator : insert translator [name] [language] / Delete : delete translator [translator_id]
+Add Resource : insert resource [name] / Delete  : delete  resource [resource_id]
+Add Category : insert category [name] / Delete  : delete  category [category_id]
+Add book : insert book [title] [product_code] [list[category_id,category_id,...]] [age_group] [release_date] [list[author_id,author_id,...]] [price] [list[language_id,language_id,...]] [publisher_id] [list[designer_id,designer_id,...]] [list[translator_id,translator_id,...]] [list[resourse_id,resourse_id,...]] 
+example : insert book hello 1040 [1,2] Adult 2020-10-07 [4,3] 90 [3] 4 [1] [3,1,2] [1,2]
+Delete book : delete book [book_id]
+""") 
+    s=input().split()
+
+    if s[0]=="insert":
+        print(len(s))
+        if s[1]=="author" and len(s)==5:
+            a1=model.Author(None,str(s[2]),str(s[3]),str(s[4]))
+            a2 = LibraryDataAdapter.AuthorDataAdapter.insert(a1)
+            print("ok")
+        elif s[1]=="publisher"  and len(s)==5:
+            p1 = model.Publisher(None,str(s[2]),str(s[3]),str(s[4]))
+            p2 = LibraryDataAdapter.PublisherDataAdapter.insert(p1) 
+            print("ok")
+        elif s[1]=="language" and len(s)==3:
+            l1=model.Language(None,str(s[2]))
+            l2 = LibraryDataAdapter.LanguageDataAdapter.insert(l1)     
+            print("ok")
+        elif s[1]=="designer" and len(s)==5:
+            d1=model.CoverDesigner(None,str(s[2]),str(s[3]),str(s[4]))
+            d2 = LibraryDataAdapter.DesignerDataAdapter.insert(d1)
+            print("ok")
+        elif s[1]=="translator" and len(s)==4:
+            t1=model.Translator(None,str(s[2]),str(s[3]))
+            t2 = LibraryDataAdapter.TranslatorDataAdapter.insert(t1)
+            print("ok")
+        elif s[1]=="resource" and len(s)==3:
+            r1=model.Resources(None,str(s[2]))
+            r2 = LibraryDataAdapter.ResourcesDataAdapter.insert(r1)  
+            print("ok")
+        elif s[1]=="category" and len(s)==3:
+            c1=model.Category(None,str(s[2]))
+            c2 = LibraryDataAdapter.CategoryDataAdapter.insert(c1)  
+            print("ok")
+          
+        elif s[1]=="book" and len(s)==14  and re.match( r,s[4]) and re.match(r2,s[6]) and re.match(r,s[7])  and re.match(r,s[9])  and re.match(r,s[11]) and re.match(r,s[12]) and re.match(r,s[13]):
+                try:
+                    title=s[2]
+                    code=int(s[3])
+                    category=json.loads(s[4])
+                    age_group=s[5]
+                    release_date=datetime.date.fromisoformat(s[6])
+                    author=json.loads(s[7])
+                    price = int(s[8])
+                    language = json.loads(s[9])
+                    publisher = model.Publisher.publishers[model.Publisher.publishers.index(int(s[10]))]
+                    designer = json.loads(s[11])
+                    translator = json.loads(s[12])
+                    resource = json.loads(s[13])
+                    
+                    LibraryDataAdapter.CategoryDataAdapter.get_all()
+                    categories=[]
+                    cat_id=[i.id for i in model.Category.categories]
+                    for i in category:
+                        if int(i) in cat_id:
+                            categories.append(model.Category.categories[model.Category.categories.index(int(i))])
+                            
+                    authors=[]
+                    author_id=[i.id for i in model.Author.authors]
+                    for i in author:
+                        if int(i) in author_id:
+                            authors.append(model.Author.authors[model.Author.authors.index(int(i))])     
+                            
+                    language_id=[i.id for i in model.Language.languages]        
+                    languages=[]    
+                    for i in language:
+                        if int(i) in language_id:
+                            languages.append(model.Language.languages[model.Language.languages.index(int(i))]) 
+                                      
+                    designers=[]    
+                    designer_id=[i.id for i in model.CoverDesigner.cover_designers]    
+                    for i in designer:
+                        if int(i) in designer_id:
+                            designers.append(model.CoverDesigner.cover_designers[model.CoverDesigner.cover_designers.index(int(i))])    
+                                                    
+                    translators=[]
+                    translator_id=[i.id for i in model.Translator.translators]   
+                    for i in translator:
+                        if int(i) in translator_id:
+                            translators.append(model.Translator.translators[model.Translator.translators.index(int(i))])   
+                              
+                    resources=[]             
+                    resource_id=[i.id for i in model.Translator.translators]                                                      
+                    for i in resource:
+                        if int(i) in resource_id:
+                            resources.append(model.Resources.resources[model.Resources.resources.index(int(i))])  
+                                                     
+                    b1=model.Book(None,title,code,categories,age_group,release_date,authors,price,languages,publisher,designers,translators,resources)                   
+                    b2 = LibraryDataAdapter.BookDataAdapter.insert(b1)
+                    
+                    
+                except:
+                    print("Error")    
+        else:
+            print("Error")                                     
+    elif s[0] == "delete":
+        if len(s)==3:
+            if s[1]=="author":
+                s=LibraryDataAdapter.AuthorDataAdapter.delete(int(s[2])) 
+                if s==True:
+                    print("ok")
+                else:
+                    print("False")    
+            elif s[1]=="publisher":
+                s=LibraryDataAdapter.PublisherDataAdapter.delete(int(s[2])) 
+                if s==True:
+                    print("ok")
+                else:
+                    print("False")                    
+            elif s[1]=="language" :
+                s=LibraryDataAdapter.LanguageDataAdapter.delete(int(s[2])) 
+                if s==True:
+                    print("ok")
+                else:
+                    print("False")    
+            elif s[1]=="designer":
+                s=LibraryDataAdapter.DesignerDataAdapter.delete(int(s[2])) 
+                if s==True:
+                    print("ok")
+                else:
+                    print("False")    
+            elif s[1]=="translator":
+                s=LibraryDataAdapter.TranslatorDataAdapter.delete(int(s[2])) 
+                if s==True:
+                    print("ok")
+                else:
+                    print("False")    
+            elif s[1]=="resource" :
+                s=LibraryDataAdapter.ResourcesDataAdapter.delete(int(s[2])) 
+                if s==True:
+                    print("ok")
+                else:
+                    print("False")                  
+              
+            elif s[1]=="category":
+                s=LibraryDataAdapter.CategoryDataAdapter.delete(int(s[2])) 
+                if s==True:
+                    print("ok")
+                else:
+                    print("False")
+            elif s[1]=="book":
+                s=LibraryDataAdapter.BookDataAdapter.delete(int(s[2])) 
+                if s==True:
+                    print("ok")
+                else:
+                    print("False")                         
+            else:
+                print("Error")                  
+                 
+        else:
     
-cn.close()
+         print("Error")
+    elif s[0]=="exit":
+        break     
+    
 
-print("loaded successfully")
-print(f"publishers: {len(publishers)}")
-
-print(f"authors: {len(authors)}")
-print(f"books: {len(books)}")
-print(f"example book: {books[0].title} by {books[0].authors[0].name if books[0].authors else 'Unknown'}")
-
-
-
-
-
+LibraryDataAdapter.cursor.close()
+LibraryDataAdapter.connection.close()

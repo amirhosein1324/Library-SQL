@@ -11,7 +11,7 @@ import datetime
 #                   encoding="utf-8").read()
 # cursor.executescript(sql_script)
 
-pre ="insert book Hasti 1040 [1,2] Adult 2020-10-07 [4,3] 90 [3] 4 [1] [3,1,2] [1,2] "
+pre ="insert book aboley 1040 [1,2] Adult 2020-10-07 [4,3] 90 [3] 4 [1] [3,1,2] [1,2] "
 
 # print(LibraryDataAdapter.ResourcesDataAdapter.delete(51))
 # print(LibraryDataAdapter.ResourcesDataAdapter.delete())
