@@ -57,7 +57,14 @@ class AuthorDataAdapter:
         cursor.execute("INSERT INTO authors (`name`,`birthdate`,`nationality`) VALUES ('{}','{}','{}');".format(author.name,author.birthdate,author.nationality))
         connection.commit() 
         a = cursor.lastrowid
-        return model.Author(a,author.name,author.birthdate,author.nationality)        
+        return model.Author(a,author.name,author.birthdate,author.nationality)  
+
+    @staticmethod
+    def search (name : str):
+         s = cursor.execute("select * from authors where nsme like '%{}%'".format(name))
+         lis = []
+         for i in lis:
+             lis.append(model.Author(i[0] , i[1] , i[2] , i[3]))     
 
 class PublisherDataAdapter:
 
