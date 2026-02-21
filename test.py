@@ -13,4 +13,3 @@ for i in (model.Book.books):
           i.publisher.id, i.publisher.name], "release_date:", i.release_date, "price:", i.price, "languages:", [[j.id, j.name] for j in i.languages], "cover_designers", [[j.id, j.name] for j in i.cover_designers], "translators:", [[j.id, j.name] for j in i.translators], "resources:", [[j.id, j.name] for j in i.resources],"\n")
     
 
-result = AuthorDataAdapter.search("ali")

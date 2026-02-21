@@ -14,8 +14,8 @@ import LibraryDataAdapter
 
 pr = "insert book ilia 1040 [1,2] Adult 2020-10-07 [4,3] 90 [3] 4 [1] [3,1,2] [1,2] "
  
-z = r"^\[\d+(,\d+)*\]$"
-z2 = r"^\d{4}-\d{2}-\d{2}$"
+r = r"^\[\d+(,\d+)*\]$"
+r2 = r"^\d{4}-\d{2}-\d{2}$"
 
 while True:
     model.Category.categories = LibraryDataAdapter.CategoryDataAdapter.get_all()
