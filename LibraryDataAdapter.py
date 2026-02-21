@@ -39,10 +39,10 @@ class CategoryDataAdapter:
 
     @staticmethod
     def search(name: str):
-        s = cursor.execute("select * from authors where name like '%{}%'".format(name))
+        s = cursor.execute("select * from category where name like '%{}%'".format(name))
         lis = []
         for i in s:
-            lis.append(model.Author(i[0], i[1], i[2], i[3]))
+            lis.append(model.Category(i[0], i[1], i[2], i[3]))
         return lis
 
 
@@ -79,7 +79,7 @@ class AuthorDataAdapter:
     @staticmethod
     def search(name: str):
         s = cursor.execute(
-            "select * from authors where nsme like '%{}%'".format(name))
+            "select * from authors where name like '%{}%'".format(name))
         lis = []
         for i in s:
             lis.append(model.Author(i[0], i[1], i[2], i[3]))
@@ -118,10 +118,10 @@ class PublisherDataAdapter:
             
     @staticmethod
     def search(name: str):
-        s = cursor.execute("select * from authors where name like '%{}%'".format(name))
+        s = cursor.execute("select * from publishers where name like '%{}%'".format(name))
         lis = []
         for i in s:
-            lis.append(model.Author(i[0], i[1], i[2], i[3]))
+            lis.append(model.Publisher(i[0], i[1], i[2], i[3]))
         return lis
 
 
@@ -156,10 +156,10 @@ class LanguageDataAdapter:
 
     @staticmethod
     def search(name: str):
-        s = cursor.execute("select * from authors where name like '%{}%'".format(name))
+        s = cursor.execute("select * from languages where name like '%{}%'".format(name))
         lis = []
         for i in s:
-            lis.append(model.Author(i[0], i[1], i[2], i[3]))
+            lis.append(model.Language(i[0], i[1], i[2], i[3]))
         return lis
     
 
@@ -196,10 +196,10 @@ class DesignerDataAdapter:
             
     @staticmethod
     def search(name: str):
-        s = cursor.execute("select * from authors where name like '%{}%'".format(name))
+        s = cursor.execute("select * from designers where name like '%{}%'".format(name))
         lis = []
         for i in s:
-            lis.append(model.Author(i[0], i[1], i[2], i[3]))
+            lis.append(model.CoverDesigner(i[0], i[1], i[2], i[3]))
         return lis
 
 
@@ -236,10 +236,10 @@ class TranslatorDataAdapter:
             
     @staticmethod
     def search(name: str):
-        s = cursor.execute("select * from authors where name like '%{}%'".format(name))
+        s = cursor.execute("select * from translators where name like '%{}%'".format(name))
         lis = []
         for i in s:
-            lis.append(model.Author(i[0], i[1], i[2], i[3]))
+            lis.append(model.Translator(i[0], i[1], i[2], i[3]))
         return lis
 
 
@@ -275,10 +275,10 @@ class ResourcesDataAdapter:
 
     @staticmethod
     def search(name: str):
-        s = cursor.execute("select * from authors where name like '%{}%'".format(name))
+        s = cursor.execute("select * from resources where name like '%{}%'".format(name))
         lis = []
         for i in s:
-            lis.append(model.Author(i[0], i[1], i[2], i[3]))
+            lis.append(model.Resources(i[0], i[1], i[2], i[3]))
         return lis
 
 
@@ -449,3 +449,12 @@ class BookDataAdapter:
             cursor.execute(
                 "INSERT INTO resources_book (`book_id`, `resource_id`) VALUES({}, {});".format(a, i))
             connection.commit()
+
+
+    @staticmethod
+    def search(name: str = "" ):
+        s = cursor.execute("select * from books where name like '%{}%'".format(name))
+        lis = []
+        for i in s:
+            lis.append(model.Book(i[0], i[1], i[2], i[3]))
+        return lis
