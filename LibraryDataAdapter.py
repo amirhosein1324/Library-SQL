@@ -3,7 +3,7 @@ import sqlite3
 import datetime
 
 
-connection = sqlite3.connect("NewLibrary.db")
+connection = sqlite3.connect("Library.db")
 cursor = connection.cursor()
 
 
@@ -39,10 +39,11 @@ class CategoryDataAdapter:
 
     @staticmethod
     def search(name: str):
-        s = cursor.execute("select * from category where name like '%{}%'".format(name))
+        s = cursor.execute(
+            "Select * from categories where name like '%{}%'".format(name))
         lis = []
         for i in s:
-            lis.append(model.Category(i[0], i[1], i[2], i[3]))
+            lis.append(model.Category(i[0], i[1]))
         return lis
 
 
@@ -79,7 +80,7 @@ class AuthorDataAdapter:
     @staticmethod
     def search(name: str):
         s = cursor.execute(
-            "select * from authors where name like '%{}%'".format(name))
+            "Select * from authors where name like '%{}%'".format(name))
         lis = []
         for i in s:
             lis.append(model.Author(i[0], i[1], i[2], i[3]))
@@ -115,10 +116,11 @@ class PublisherDataAdapter:
                 return True
             else:
                 return False
-            
+
     @staticmethod
     def search(name: str):
-        s = cursor.execute("select * from publishers where name like '%{}%'".format(name))
+        s = cursor.execute(
+            "Select * from publishers where name like '%{}%'".format(name))
         lis = []
         for i in s:
             lis.append(model.Publisher(i[0], i[1], i[2], i[3]))
@@ -153,15 +155,15 @@ class LanguageDataAdapter:
             else:
                 return False
 
-
     @staticmethod
     def search(name: str):
-        s = cursor.execute("select * from languages where name like '%{}%'".format(name))
+        s = cursor.execute(
+            "Select * from languages where name like '%{}%'".format(name))
         lis = []
         for i in s:
-            lis.append(model.Language(i[0], i[1], i[2], i[3]))
+            lis.append(model.Language(i[0], i[1]))
         return lis
-    
+
 
 class DesignerDataAdapter:
 
@@ -193,10 +195,11 @@ class DesignerDataAdapter:
                 return True
             else:
                 return False
-            
+
     @staticmethod
     def search(name: str):
-        s = cursor.execute("select * from designers where name like '%{}%'".format(name))
+        s = cursor.execute(
+            "Select * from cover_designers where name like '%{}%'".format(name))
         lis = []
         for i in s:
             lis.append(model.CoverDesigner(i[0], i[1], i[2], i[3]))
@@ -233,13 +236,14 @@ class TranslatorDataAdapter:
                 return True
             else:
                 return False
-            
+
     @staticmethod
     def search(name: str):
-        s = cursor.execute("select * from translators where name like '%{}%'".format(name))
+        s = cursor.execute(
+            "Select * from translators where name like '%{}%'".format(name))
         lis = []
         for i in s:
-            lis.append(model.Translator(i[0], i[1], i[2], i[3]))
+            lis.append(model.Translator(i[0], i[1], i[2]))
         return lis
 
 
@@ -271,14 +275,14 @@ class ResourcesDataAdapter:
                 return True
             else:
                 return False
-            
 
     @staticmethod
     def search(name: str):
-        s = cursor.execute("select * from resources where name like '%{}%'".format(name))
+        s = cursor.execute(
+            "Select * from resources where name like '%{}%'".format(name))
         lis = []
         for i in s:
-            lis.append(model.Resources(i[0], i[1], i[2], i[3]))
+            lis.append(model.Resources(i[0], i[1]))
         return lis
 
 
@@ -324,23 +328,26 @@ class BookDataAdapter:
 
                     book_authors.append(authors[authors.index(auth_row[7])])
 
+
             book_languages = []
             for lang_row in table:
                 if lang_row[0] == book_id and lang_row[10] is not None and lang_row[10] not in book_languages:
                     book_languages.append(
                         languages[languages.index(lang_row[10])])
-
+                    
             book_designers = []
             for des_row in table:
                 if des_row[0] == book_id and des_row[9] is not None and des_row[9] not in book_designers:
                     book_designers.append(
                         cover_designers[cover_designers.index(des_row[9])])
 
+
             book_translators = []
             for tran_row in table:
                 if tran_row[0] == book_id and tran_row[11] is not None and tran_row[11] not in book_translators:
                     book_translators.append(
                         translators[translators.index(tran_row[11])])
+
 
             book_resources = []
             for res_row in table:
@@ -450,11 +457,118 @@ class BookDataAdapter:
                 "INSERT INTO resources_book (`book_id`, `resource_id`) VALUES({}, {});".format(a, i))
             connection.commit()
 
-
     @staticmethod
-    def search(name: str = "" ):
-        s = cursor.execute("select * from books where name like '%{}%'".format(name))
-        lis = []
-        for i in s:
-            lis.append(model.Book(i[0], i[1], i[2], i[3]))
-        return lis
+    def search(name: str = "", author_name: str = "", publisher_name: str = "", category_name: str = "", language_name: str = "", designer_name: str = "", translator_name: str = "", resource_name: str = ""):
+
+        s = cursor.execute("""
+                           SELECT books.id,books.title,books.product_code,books.age_group,publishers.id,books.release_date,books.price,authors.id,categories.id,cover_designers.id,languages.id,translators.id,resources.id FROM books
+                         LEFT JOIN publishers on books.publisher_id = publishers.id  
+                         LEFT JOIN book_author on books.id = book_author.book_id LEFT JOIN authors on authors.id = book_author.author_id
+                         LEFT JOIN book_category on books.id = book_category.book_id LEFT JOIN categories on categories.id = book_category.category_id
+                         LEFT JOIN book_language on books.id = book_language.book_id LEFT JOIN languages on languages.id = book_language.language_id
+                         LEFT JOIN book_designer on books.id = book_designer.book_id LEFT JOIN cover_designers on cover_designers.id = book_designer.designer_id
+                         LEFT JOIN book_translator on books.id = book_translator.book_id LEFT JOIN translators on translators.id = book_translator.translator_id
+                         LEFT JOIN resources_book on books.id = resources_book.book_id LEFT JOIN resources on resources.id = resources_book.resource_id
+                         
+                         WHERE books.title like '%{}%' and (publishers.name like '%{}%' or publishers.name is NULL) and (authors.name like '%{}%' or authors.name is NULL) and (categories.name like '%{}%' or categories.name is NULL)  and (languages.name like '%{}%' or 
+                         languages.name is NULL) and (cover_designers.name like '%{}%' or cover_designers.name is NULL ) and (translators.name like '%{}%' or translators.name is NULL) and (resources.name like '%{}%' or resources.name is NULL)
+                         """
+
+                           .format(name, publisher_name, author_name, category_name, language_name, designer_name, translator_name, resource_name))
+
+        table = list(s)
+
+        categories = CategoryDataAdapter.get_all()
+        authors = AuthorDataAdapter.get_all()
+        publishers = PublisherDataAdapter.get_all()
+        languages = LanguageDataAdapter.get_all()
+        cover_designers = DesignerDataAdapter.get_all()
+        translators = TranslatorDataAdapter.get_all()
+        resources = ResourcesDataAdapter.get_all()
+
+        books = []
+        for row in table:
+            book_id = row[0]
+            title = row[1]
+            product_code = row[2]
+            age_group = row[3]
+            publisher = publishers[publishers.index(row[4])]
+            release_date = datetime.date.fromisoformat(row[5])
+            price = row[6]
+
+            # book_categories = [categories[categories.index(cat)] for cat in [
+            #     cat_row[7] for cat_row in table if cat_row[0] == book_id] if cat is not None and not cat in book_categories]
+            book_categories = []
+
+            for cat_row in table:
+
+                if cat_row[0] == book_id and cat_row[8] is not None and cat_row[8] not in book_categories:
+
+                    book_categories.append(
+                        categories[categories.index(cat_row[8])])
+
+        #     book_authors = [authors[authors.index(author)] for author in [
+        #         author_row[8] for author_row in table if author_row[0] == book_id] if author is not None]
+            book_authors = []
+
+            for auth_row in table:
+
+                if auth_row[0] == book_id and auth_row[7] is not None and auth_row[7] not in book_authors:
+
+                    book_authors.append(authors[authors.index(auth_row[7])])
+
+        #     book_languages = [languages[languages.index(language)] for language in [
+        #         language_row[9] for language_row in table if language_row[0] == book_id] if language is not None]
+            book_languages = []
+            for lang_row in table:
+                if lang_row[0] == book_id and lang_row[10] is not None and lang_row[10] not in book_languages:
+                    book_languages.append(
+                        languages[languages.index(lang_row[10])])
+
+        #     book_designers = [cover_designers[cover_designers.index(designer)] for designer in [
+        #         designer_row[10] for designer_row in table if designer_row[0] == book_id] if designer is not None]
+            book_designers = []
+            for des_row in table:
+                if des_row[0] == book_id and des_row[9] is not None and des_row[9] not in book_designers:
+                    book_designers.append(
+                        cover_designers[cover_designers.index(des_row[9])])
+
+        #     book_translators = [translators[translators.index(translator)] for translator in [
+        #         translator_row[11] for translator_row in table if translator_row[0] == book_id] if translator is not None]
+            book_translators = []
+            for tran_row in table:
+                if tran_row[0] == book_id and tran_row[11] is not None and tran_row[11] not in book_translators:
+                    book_translators.append(
+                        translators[translators.index(tran_row[11])])
+
+        #     book_resources = [resources[resources.index(resource)] for resource in [
+        #         resources_row[12] for resources_row in table if resources_row[0] == book_id] if resource is not None]
+            book_resources = []
+            for res_row in table:
+                if res_row[0] == book_id and res_row[12] is not None and res_row[12] not in book_resources:
+                    book_resources.append(
+                        resources[resources.index(res_row[12])])
+
+            books.append(model.Book(
+                id=book_id,
+                title=title,
+                product_code=product_code,
+                categories=book_categories,
+                age_group=age_group,
+                authors=book_authors,
+                publisher=publisher,
+                release_date=release_date,
+                price=price,
+                languages=book_languages,
+                cover_designers=book_designers,
+                translators=book_translators,
+                resources=book_resources))
+        newbooks = []
+        for i in books:
+            status = True
+            for j in newbooks:
+                if j.id == i.id:
+                    status = False
+            if status:
+                newbooks.append(i)
+        return newbooks
